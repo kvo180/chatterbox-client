@@ -1,13 +1,7 @@
 var clientUrl = "http://parse.sfm6.hackreactor.com/chatterbox/classes/messages";
 
 var messagesArr = [];
-var roomsArray = ['test'];
-
-var message = {
-  username: 'kvo',
-  text: 'Oh O-phelia...',
-  roomname: 'Ah ah...'
-};
+var roomsArray = ['test', 'yayuh'];
 
 var App = function() {
   this.server = clientUrl;
@@ -17,13 +11,25 @@ var App = function() {
 };
 
 App.prototype.init = function() {
+
+    var user = window.prompt("Please enter username...")
+    this.currentUser = user;
+
     this.fetch();
     var testMessage = {
       username: 'Mel Brooks',
       text: 'Never underestimate the power of the Schwartz!',
       roomname: 'test'
     }
+
+    var yayuhMessage = {
+      username: 'Khoa',
+      text: 'Never underestimate the power of the Schwartz!',
+      roomname: 'yayuh'
+    }
+
     messagesArr.push(testMessage);
+    messagesArr.push(yayuhMessage);
 };
 
 App.prototype.send = function(message) {
@@ -51,20 +57,16 @@ App.prototype.fetch = function() {
     type: "GET",
     success: function(data) {
 
-    // console.log('data fetched', data);
       data.results.forEach(function(message) {
         messagesArr.push(message);
       })
-      // console.log(messagesArr)
+
       messagesArr.forEach(function(message) {
         context.renderMessage(message);
       })
 
       context.getInitialRooms();
       context.populateRoomsList();
-
-
-
 
     },
     error: function(data) {
@@ -104,16 +106,11 @@ App.prototype.renderRoom = function() {
 }
 
 App.prototype.filterMessages = function(key, value) {
-
-
   var filtered = [];
 
-
   messagesArr.forEach(function(message) {
-    
-
     if (message[key] === value) {
-            filtered.push(message);
+      filtered.push(message);
     }
   });
 
@@ -129,7 +126,6 @@ App.prototype.getInitialRooms = function() {
       roomsArray.push(message.roomname);
     }
   })  
-  // console.log(roomsArray);
 };
 
 App.prototype.populateRoomsList = function() {
@@ -148,11 +144,9 @@ App.prototype.createMessage = function(username, text, roomname) {
 }
 
 
-
+var app = new App();
 
 $(document).ready(function() {
-
-  var app = new App();
 
   app.init();
 
@@ -161,20 +155,15 @@ $(document).ready(function() {
     // console.log(message);
   });
 
-  $('.dropdown').on("click", ".dropdown-content", function(event) {
+  $('.dropdown-content').on("click", 'a', function(event) {
     app.currentRoom = this.textContent.trim();
-    console.log(app.currentRoom)
-    // console.log("'" + this.context + "'");
+    // console.log(app.currentRoom)
     var filteredArr = app.filterMessages('roomname', app.currentRoom);
     app.clearMessages();
 
-    // console.log(app.currentRoom);
-
     filteredArr.forEach(function(message) {
-      // console.log(message)
       app.renderMessage(message);
     })
-    // console.log(filteredArr)
   })
 });
 
