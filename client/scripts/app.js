@@ -1,7 +1,6 @@
 var clientUrl = "http://parse.sfm6.hackreactor.com/chatterbox/classes/messages";
-
-var messagesArr = [];
 var roomsArray = [];
+
 var userName = window.location.search.substring(window.location.search.indexOf('=') + 1, window.location.search.length);
 
 
@@ -13,7 +12,6 @@ var App = function() {
 
 App.prototype.init = function() {
   this.fetch();
-
 };
 
 
@@ -22,38 +20,43 @@ App.prototype.hasEscape = function(message) {
   var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
 
   if (pattern.test(message.username) || pattern.test(message.text) || pattern.test(message.roomname)) {
-    console.log("hello")
+    
     return true;
   } else {
     return false;
   }
 }
 
-App.prototype.fetch = function() {
+App.prototype.fetch = function(newData) {
   var context = this;
 
   $.ajax({
     url: context.server,
+    data: 'order=-createdAt',
     type: "GET",
     success: function(data) {
-      console.log('Data fetched');
-
-      context.clearDOMMessages();
+      // console.log('Data fetched');
+      console.log(data)
+      context.clearMessages();
 
       data.results.forEach(function(message) {
+        
         if (!context.hasEscape(message)) {
-          messagesArr.push(message);
+          if (newData !== undefined) {
+            if (message.roomname === newData) {
+              context.renderMessage(message);    
+            }
+          } else {
+            context.renderMessage(message);
+          }
+          
+          if (!roomsArray.includes(message.roomname)) {
+            roomsArray.push(message.roomname);
+          }
         }
-      })
-      // console.log(messagesArr)
-      messagesArr.forEach(function(message) {
-        context.renderMessage(message);
-      })
+      });
 
-      // console.log(messagesArr)
-      context.populateRoomsList();
-
-
+        context.populateRoomsList();
     },
     error: function(data) {
       console.log('failed to fetch data', data);
@@ -61,6 +64,23 @@ App.prototype.fetch = function() {
   });
 };
 
+App.prototype.populateRoomsList = function() {
+
+  if ($('.dropdown-content').children().length > 0) {
+    $(".dropdown-content").empty();
+  };
+
+  if (this.currentRoom === undefined) {
+    this.currentRoom = roomsArray[0];
+  }
+  // DOM Manipulation
+  roomsArray.forEach(function(roomname) {
+    var roomAnchor = document.createElement('a');
+    roomAnchor.setAttribute('class', roomname);
+    roomAnchor.append(document.createTextNode(roomname));
+    $('.dropdown-content').append(roomAnchor);
+  });
+};
 
 App.prototype.send = function(message) {
   console.log(message)
@@ -74,7 +94,7 @@ App.prototype.send = function(message) {
     success: function (data) {
       console.log(data)
       console.log('chatterbox: Message sent');
-      context.fetch();
+      context.fetch(app.currentRoom);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -83,11 +103,8 @@ App.prototype.send = function(message) {
   });
 };
 
-App.prototype.clearDOMMessages = function() {
-  // console.log("This is the clear messages")
-  messagesArr = [];
+App.prototype.clearMessages = function() {
   console.log('messages cleared');
-  // console.log(messagesArr)
   $('#chats').html('');
 }
 
@@ -115,48 +132,8 @@ App.prototype.renderMessage = function(message) {
 
 App.prototype.renderRoom = function(roomText) {
   this.populateRoomsList();
-}
-
-App.prototype.filterMessages = function(key, value) {
-
-
-  var filtered = [];
-
-
-  messagesArr.forEach(function(message) {
-    
-
-    if (message[key] === value) {
-            filtered.push(message);
-    }
-  });
-
-  return filtered;
-}
-
+} 
   
-App.prototype.populateRoomsList = function() {
-
-  // roomsArray = [];
-  console.log(messagesArr)
-  messagesArr.forEach(function(message) {
-    
-    if (!roomsArray.includes(message.roomname)) {
-      roomsArray.push(message.roomname);
-    }
-  });
-
-  if (this.currentRoom === undefined) {
-    this.currentRoom = roomsArray[0];
-  }
-
-  roomsArray.forEach(function(roomname) {
-    var roomAnchor = document.createElement('a');
-    roomAnchor.setAttribute('class', roomname);
-    roomAnchor.append(document.createTextNode(roomname));
-    $('#roomSelect').append(roomAnchor);
-  });
-};
 
 App.prototype.createMessage = function(username, text, roomname) {
   var message = {};
@@ -185,26 +162,16 @@ $(document).ready(function() {
 
   $('#createRoom').on("click", function(event) {
     var roomText = $(".newRoom").val();
+    app.clearMessages();
     roomsArray.push(roomText);
-    app.clearDOMMessages();
     app.currentRoom = roomText;
     app.renderRoom(roomText);
   });
 
-  $('#roomSelect').on("click", "a", function(event) {
+  $('.dropdown-content').on("click", "a", function(event) {
     app.currentRoom = this.textContent.trim();
-    console.log(app.currentRoom)
-    // console.log("'" + this.context + "'");
-    var filteredArr = app.filterMessages('roomname', app.currentRoom);
-    app.clearDOMMessages();
-
-    // console.log(app.currentRoom);
-
-    filteredArr.forEach(function(message) {
-      // console.log(message)
-      app.renderMessage(message);
-    })
-    // console.log(filteredArr)
+    // console.log(app.currentRoom)
+    app.fetch(app.currentRoom);
   })
 });
 

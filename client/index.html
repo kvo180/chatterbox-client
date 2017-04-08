@@ -23,6 +23,7 @@
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
   </head>
+
   <body>
     <div id="main">
       <h1>chatterbox</h1>
@@ -30,30 +31,23 @@
     </div>
     <button class="createMessage">Create New Message</button>
     <button id="createRoom">Create New Room</button>
-    <form>
 
+  <form>
+    New Room:<br>
+      <input type="text" class="newRoom" name="room"><br>
+        New Message:<br>
+      <input type="text" class="newMessage" name="msg">
+  </form>
 
-
-
-
-  New Room:<br>
-  <input type="text" class="newRoom" name="room"><br>
-  New Message:<br>
-  <input type="text" class="newMessage" name="msg">
-</form>
-    <div class="dropdown">
-  <button class="dropbtn">Rooms</button>
-  <div id="roomSelect">
+  <div class="dropdown">
+    <button class="dropbtn">Rooms</button>
+    <div class="dropdown-content"></div>
   </div>
-</div>
 
 
 
-
-
-
-
-    <div id="chats"></div>
+<div id="chats"></div>
   </body>
+
 </html>
 
