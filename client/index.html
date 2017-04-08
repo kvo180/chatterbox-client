@@ -7,6 +7,7 @@
 
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
@@ -27,6 +28,20 @@
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
     </div>
+    <button class="createMessage">Create New Message</button>
+    <button class="filterRoom">Create New Room</button>
+    <form>
+  New Room:<br>
+  <input type="text" class="newRoom" name="room"><br>
+  New Message:<br>
+  <input type="text" class="newMessage" name="msg">
+</form>
+    <div class="dropdown">
+  <button class="dropbtn">Rooms</button>
+  <div class="dropdown-content">
+  </div>
+</div>
     <div id="chats"></div>
   </body>
 </html>
+
