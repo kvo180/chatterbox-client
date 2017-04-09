@@ -112,18 +112,18 @@
         app.handleUsernameClick.restore();
       });
 
-      it('should try to send a message upon clicking submit', function() {
-        sinon.spy(app, 'handleSubmit');
+    //   it('should try to send a message upon clicking submit', function() {
+    //     sinon.spy(app, 'handleSubmit');
 
-        $('#message').val('Why so many Mel Brooks quotes?');
+    //     $('#message').val('Why so many Mel Brooks quotes?');
 
-        app.init();
+    //     app.init();
 
-        $('#send .submit').trigger('submit');
-        expect(app.handleSubmit.calledOnce).to.be.true;
+    //     $('#send .submit').trigger('submit');
+    //     expect(app.handleSubmit.calledOnce).to.be.true;
 
-        app.handleSubmit.restore();
-      });
-    });
+    //     app.handleSubmit.restore();
+    //   });
+    // });
   });
 });
