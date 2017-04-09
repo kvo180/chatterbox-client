@@ -20,6 +20,7 @@ body {
     font-size: 35px;
     margin-bottom: 5px;
     padding: 5px;
+    width: ;
 }
 
 #main h1 span {
@@ -104,7 +105,7 @@ form input[type=text] {
 }
 
 /* Dropdown Content (Hidden by Default) */
-.dropdown-content {
+#roomSelect {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -114,7 +115,7 @@ form input[type=text] {
 }
 
 /* Links inside the dropdown */
-.dropdown-content a {
+#roomSelect a {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
@@ -122,10 +123,10 @@ form input[type=text] {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #f1f1f1}
+#roomSelect a:hover {background-color: #f1f1f1}
 
 /* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {
+.dropdown:hover #roomSelect {
     display: block;
 }
 
@@ -134,3 +135,34 @@ form input[type=text] {
     background-color: #3e8e41;
 }
 
+.username {
+    display: inline-block;
+    padding: 0px 0px 20px 0px;
+    color: blue;
+    cursor: pointer;
+}
+
+.text {
+    display: inline-block;
+    color: black;
+    margin: 0px 0px 0px 6px;
+}
+
+.messageClass {
+    border: 4px black;
+    background-color: #42f4b3;
+    margin: 0px 0px 10px 0px;
+}
+
+.roomname {
+    color: #b241f4;
+}
+
+#friends {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    display: inline;
+    left: 100px;
+    top: 0px;
+}

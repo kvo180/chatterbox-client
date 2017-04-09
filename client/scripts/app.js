@@ -1,5 +1,6 @@
 var clientUrl = "http://parse.sfm6.hackreactor.com/chatterbox/classes/messages";
 var roomsArray = [];
+var friendsList = [];
 
 var userName = window.location.search.substring(window.location.search.indexOf('=') + 1, window.location.search.length);
 
@@ -12,12 +13,23 @@ var App = function() {
 
 App.prototype.init = function() {
   this.fetch();
+
+  var $friends = $('#friends');
+  // $friends.empty();
+
+  if (friendsList.length > 0) {
+    $friends.append(document.createTextNode('NONE'));    
+  } else {
+    friendsList.forEach(function(friend) {
+      $friends.append(document.createTextNode(friend));
+    });
+  } 
 };
 
 
 
 App.prototype.hasEscape = function(message) {
-  var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
+  var pattern = new RegExp(/[~`!@_#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
 
   if (pattern.test(message.username) || pattern.test(message.text) || pattern.test(message.roomname)) {
     
@@ -66,8 +78,8 @@ App.prototype.fetch = function(newData) {
 
 App.prototype.populateRoomsList = function() {
 
-  if ($('.dropdown-content').children().length > 0) {
-    $(".dropdown-content").empty();
+  if ($('#roomSelect').children().length > 0) {
+    $("#roomSelect").empty();
   };
 
   if (this.currentRoom === undefined) {
@@ -78,7 +90,7 @@ App.prototype.populateRoomsList = function() {
     var roomAnchor = document.createElement('a');
     roomAnchor.setAttribute('class', roomname);
     roomAnchor.append(document.createTextNode(roomname));
-    $('.dropdown-content').append(roomAnchor);
+    $('#roomSelect').append(roomAnchor);
   });
 };
 
@@ -110,10 +122,12 @@ App.prototype.clearMessages = function() {
 
 App.prototype.renderMessage = function(message) {
   var node = document.createElement('div');
+  node.setAttribute('class', 'messageClass');
 
   var username = document.createElement('div');
   username.setAttribute('class', 'username');
-  username.append(document.createTextNode(message.username));
+  username.setAttribute('id', message.username);
+  username.append(document.createTextNode(message.username + ':'));
   node.appendChild(username);
 
   var text = document.createElement('div');
@@ -131,6 +145,11 @@ App.prototype.renderMessage = function(message) {
 }
 
 App.prototype.renderRoom = function(roomText) {
+  console.log(roomText);
+  if (!roomsArray.includes(roomText)) {
+    roomsArray.push(roomText);
+    console.log(roomText);
+  }
   this.populateRoomsList();
 } 
   
@@ -151,8 +170,6 @@ var app = new App();
 
 $(document).ready(function() {
 
-  
-
   app.init();
 
   $('.createMessage').on("click", function(event) {
@@ -163,16 +180,22 @@ $(document).ready(function() {
   $('#createRoom').on("click", function(event) {
     var roomText = $(".newRoom").val();
     app.clearMessages();
-    roomsArray.push(roomText);
     app.currentRoom = roomText;
     app.renderRoom(roomText);
   });
 
-  $('.dropdown-content').on("click", "a", function(event) {
+  $('#roomSelect').on("click", "a", function(event) {
     app.currentRoom = this.textContent.trim();
     // console.log(app.currentRoom)
     app.fetch(app.currentRoom);
-  })
+  });
+
+  $('div').on('click', ".username", function(event) {
+    console.log(this.textContent)
+    if (!friendsList.includes(this.textContent)) {
+      friendsList.push(this.textContent.substring(this.textContent.indexOf(':'), 0));
+    }
+  });
 });
 
 
