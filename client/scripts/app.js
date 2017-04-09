@@ -4,7 +4,6 @@ var friendsList = [];
 
 var userName = window.location.search.substring(window.location.search.indexOf('=') + 1, window.location.search.length);
 
-
 var App = function() {
   this.server = clientUrl;
   this.currentUser = userName;
@@ -14,16 +13,16 @@ var App = function() {
 App.prototype.init = function() {
   this.fetch();
 
-  var $friends = $('#friends');
-  // $friends.empty();
+  // var $friends = $('#friends');
+  // // $friends.empty();
 
-  if (friendsList.length > 0) {
-    $friends.append(document.createTextNode('NONE'));    
-  } else {
-    friendsList.forEach(function(friend) {
-      $friends.append(document.createTextNode(friend));
-    });
-  } 
+  // if (friendsList.length > 0) {
+  //   $friends.append(document.createTextNode('NONE'));    
+  // } else {
+  //   friendsList.forEach(function(friend) {
+  //     $friends.append(document.createTextNode(friend));
+  //   });
+  // } 
 };
 
 
@@ -47,8 +46,6 @@ App.prototype.fetch = function(newData) {
     data: 'order=-createdAt',
     type: "GET",
     success: function(data) {
-      // console.log('Data fetched');
-      console.log(data)
       context.clearMessages();
 
       data.results.forEach(function(message) {
@@ -67,7 +64,6 @@ App.prototype.fetch = function(newData) {
           }
         }
       });
-
         context.populateRoomsList();
     },
     error: function(data) {
@@ -76,10 +72,11 @@ App.prototype.fetch = function(newData) {
   });
 };
 
+
 App.prototype.populateRoomsList = function() {
 
   if ($('#roomSelect').children().length > 0) {
-    $("#roomSelect").empty();
+    $('#roomSelect').empty();
   };
 
   if (this.currentRoom === undefined) {
@@ -90,7 +87,7 @@ App.prototype.populateRoomsList = function() {
     var roomAnchor = document.createElement('a');
     roomAnchor.setAttribute('class', roomname);
     roomAnchor.append(document.createTextNode(roomname));
-    $('#roomSelect').append(roomAnchor);
+    $('#roomSelect').appendChild(roomAnchor);
   });
 };
 
@@ -104,7 +101,6 @@ App.prototype.send = function(message) {
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
-      console.log(data)
       console.log('chatterbox: Message sent');
       context.fetch(app.currentRoom);
     },
@@ -116,7 +112,6 @@ App.prototype.send = function(message) {
 };
 
 App.prototype.clearMessages = function() {
-  console.log('messages cleared');
   $('#chats').html('');
 }
 
@@ -144,15 +139,24 @@ App.prototype.renderMessage = function(message) {
   $chats.append(node);
 }
 
+
 App.prototype.renderRoom = function(roomText) {
-  console.log(roomText);
   if (!roomsArray.includes(roomText)) {
     roomsArray.push(roomText);
-    console.log(roomText);
   }
   this.populateRoomsList();
 } 
   
+
+App.prototype.populateRoomsList = function() {
+  roomsArray.forEach(function(roomname) {
+    var roomAnchor = document.createElement('a');
+    roomAnchor.setAttribute('class', roomname);
+    roomAnchor.append(document.createTextNode(roomname));
+    $('#roomSelect').append(roomAnchor);
+  });
+};
+
 
 App.prototype.createMessage = function(username, text, roomname) {
   var message = {};
@@ -164,7 +168,6 @@ App.prototype.createMessage = function(username, text, roomname) {
   this.send(message);
   
 }
-
 
 var app = new App();
 
@@ -179,22 +182,19 @@ $(document).ready(function() {
 
   $('#createRoom').on("click", function(event) {
     var roomText = $(".newRoom").val();
-    app.clearMessages();
-    app.currentRoom = roomText;
     app.renderRoom(roomText);
   });
 
   $('#roomSelect').on("click", "a", function(event) {
     app.currentRoom = this.textContent.trim();
-    // console.log(app.currentRoom)
     app.fetch(app.currentRoom);
   });
 
   $('div').on('click', ".username", function(event) {
-    console.log(this.textContent)
-    if (!friendsList.includes(this.textContent)) {
+    if (!friendsList.includes(this.textContent.substring(this.textContent.indexOf(':'), 0))) {
       friendsList.push(this.textContent.substring(this.textContent.indexOf(':'), 0));
     }
+    console.log(friendsList);
   });
 });
 
