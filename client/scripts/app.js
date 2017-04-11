@@ -1,4 +1,4 @@
-var clientUrl = "http://parse.sfm6.hackreactor.com/chatterbox/classes/messages";
+var clientUrl = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
 var roomsArray = [];
 var friendsList = [];
 
@@ -17,12 +17,12 @@ App.prototype.init = function() {
   // // $friends.empty();
 
   // if (friendsList.length > 0) {
-  //   $friends.append(document.createTextNode('NONE'));    
+  //   $friends.append(document.createTextNode('NONE'));
   // } else {
   //   friendsList.forEach(function(friend) {
   //     $friends.append(document.createTextNode(friend));
   //   });
-  // } 
+  // }
 };
 
 
@@ -31,12 +31,10 @@ App.prototype.hasEscape = function(message) {
   var pattern = new RegExp(/[~`!@_#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
 
   if (pattern.test(message.username) || pattern.test(message.text) || pattern.test(message.roomname)) {
-    
     return true;
-  } else {
-    return false;
   }
-}
+  return false;
+};
 
 App.prototype.fetch = function(newData) {
   var context = this;
@@ -44,27 +42,27 @@ App.prototype.fetch = function(newData) {
   $.ajax({
     url: context.server,
     data: 'order=-createdAt',
-    type: "GET",
+    type: 'GET',
     success: function(data) {
       context.clearMessages();
 
       data.results.forEach(function(message) {
-        
+
         if (!context.hasEscape(message)) {
           if (newData !== undefined) {
             if (message.roomname === newData) {
-              context.renderMessage(message);    
+              context.renderMessage(message);
             }
           } else {
             context.renderMessage(message);
           }
-          
+
           if (!roomsArray.includes(message.roomname)) {
             roomsArray.push(message.roomname);
           }
         }
       });
-        context.populateRoomsList();
+      context.populateRoomsList();
     },
     error: function(data) {
       console.log('failed to fetch data', data);
@@ -77,7 +75,7 @@ App.prototype.populateRoomsList = function() {
 
   if ($('#roomSelect').children().length > 0) {
     $('#roomSelect').empty();
-  };
+  }
 
   if (this.currentRoom === undefined) {
     this.currentRoom = roomsArray[0];
@@ -87,12 +85,12 @@ App.prototype.populateRoomsList = function() {
     var roomAnchor = document.createElement('a');
     roomAnchor.setAttribute('class', roomname);
     roomAnchor.append(document.createTextNode(roomname));
-    $('#roomSelect').appendChild(roomAnchor);
+    $('#roomSelect').append(roomAnchor);
   });
 };
 
 App.prototype.send = function(message) {
-  console.log(message)
+  console.log(message);
 
   var context = this;
   $.ajax({
@@ -113,7 +111,7 @@ App.prototype.send = function(message) {
 
 App.prototype.clearMessages = function() {
   $('#chats').html('');
-}
+};
 
 App.prototype.renderMessage = function(message) {
   var node = document.createElement('div');
@@ -137,7 +135,7 @@ App.prototype.renderMessage = function(message) {
 
   var $chats = $('#chats');
   $chats.append(node);
-}
+};
 
 
 App.prototype.renderRoom = function(roomText) {
@@ -145,16 +143,6 @@ App.prototype.renderRoom = function(roomText) {
     roomsArray.push(roomText);
   }
   this.populateRoomsList();
-} 
-  
-
-App.prototype.populateRoomsList = function() {
-  roomsArray.forEach(function(roomname) {
-    var roomAnchor = document.createElement('a');
-    roomAnchor.setAttribute('class', roomname);
-    roomAnchor.append(document.createTextNode(roomname));
-    $('#roomSelect').append(roomAnchor);
-  });
 };
 
 
@@ -163,11 +151,10 @@ App.prototype.createMessage = function(username, text, roomname) {
 
   message.username = username;
   message.text = text;
-  message.roomname = roomname
+  message.roomname = roomname;
 
   this.send(message);
-  
-}
+};
 
 var app = new App();
 
@@ -176,21 +163,23 @@ $(document).ready(function() {
   app.init();
 
   $('.createMessage').on("click", function(event) {
-    var messageText = $(".newMessage").val();
+    var messageText = $('.newMessage').val();
     app.createMessage(app.currentUser, messageText, app.currentRoom);
   });
 
-  $('#createRoom').on("click", function(event) {
-    var roomText = $(".newRoom").val();
+  $('#createRoom').on('click', function(event) {
+    var roomText = $('.newRoom').val();
+    app.clearMessages();
+    app.currentRoom = roomText;
     app.renderRoom(roomText);
   });
 
-  $('#roomSelect').on("click", "a", function(event) {
+  $('#roomSelect').on('click', 'a', function(event) {
     app.currentRoom = this.textContent.trim();
     app.fetch(app.currentRoom);
   });
 
-  $('div').on('click', ".username", function(event) {
+  $('div').on('click', '.username', function(event) {
     if (!friendsList.includes(this.textContent.substring(this.textContent.indexOf(':'), 0))) {
       friendsList.push(this.textContent.substring(this.textContent.indexOf(':'), 0));
     }
